@@ -1,8 +1,8 @@
 # Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
 Is there life on Mars?;Science doesn't know this yet%true|Certainly. The red UFO is from Mars. And green is from Venus%false|Absolutely not%false
 How should resources be loaded form jar in Java?;ClassLoader#geResourceAsStream or ClassPathResource#getInputStream%true|ClassLoader#geResource#getFile + FileReader%false|Wingardium Leviosa%false
-Which option is a good way to handle the exception?;@SneakyThrow%false|e.printStackTrace()%false|Rethrow with wrapping in business exception (for example, QuestionReadException)%true|Ignoring exception%false
-Who developed the Linux operating system?;Bendare Loi%false|Richard Stallman%false|Linus Torvalds%True|Graham Lee%false
-In what year was the first version of HTML released?;1991%true|1995%false|1993%false|1997%false
-Who is the creator of Java?;Ryan Gosling%false|Barbie%false|Paul McCartney%false|James Gosling%true
-In what year was Java created?;1986%false|1995%true|1991%false|1990%false
+Which option is a good way to handle the exception?;@SneakyThrow%false|e.printStackTrace()%false|Rethrow with wrapping in business exception (for example, QuestionReadException)%true
+Who developed the Linux operating system?;Bendare Loi%false|Richard Stallman%false|Linus Torvalds%True
+In what year was the first version of HTML released?;1991%true|1995%false|1993%false
+Who is the creator of Java?;Ryan Gosling%false|Paul McCartney%false|James Gosling%true
+In what year was Java created?;1986%false|1995%true|1990%false

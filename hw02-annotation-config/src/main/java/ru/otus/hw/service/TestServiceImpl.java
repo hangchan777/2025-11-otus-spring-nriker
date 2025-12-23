@@ -2,15 +2,14 @@ package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.otus.hw.config.TestConfig;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
-import ru.otus.hw.exceptions.UserAnswerReadException;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -21,45 +20,61 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionDao questionDao;
 
+    private final TestConfig testConfig;
+
     @Override
     public TestResult executeTestFor(Student student) {
-        ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
         var questions = questionDao.findAll();
-        var testResult = new TestResult(student);
+        printTestGreeting(questions.size());
+        return studentTesting(questions, student);
+    }
 
+    private void printTestGreeting(int questionsCount) {
+        ioService.printLine("");
+        ioService.printFormattedLine("The test contains %s questions", questionsCount);
+        ioService.printFormattedLine("For successful completion, you need to answer %s of them correctly",
+                testConfig.getRightAnswersCountToPass());
+        ioService.printFormattedLine("Please, answer the questions below%n");
+    }
+
+    private TestResult studentTesting(List<Question> questions, Student student) {
+        var testResult = new TestResult(student);
         for (var question: questions) {
-            printQuestion(question);
-            var isAnswerAccepted = new AtomicBoolean(false);
-            var isAnswerValid = false;
-            while (!isAnswerAccepted.get()) {
-                try {
-                    var userAnswer = ioService.readStringWithPrompt("Your answer?");
-                    isAnswerValid = checkAnswer(question.answers(), userAnswer);
-                    isAnswerAccepted.set(true);
-                } catch (UserAnswerReadException e) {
-                    ioService.printFormattedLine("Your answer does not match the answer options. Please, try again");
-                }
-            }
+            printQuestionAndAnswerOptions(question);
+            var isAnswerValid = checkStudentAnswer(question.answers());
             testResult.applyAnswer(question, isAnswerValid);
         }
         return testResult;
     }
 
-    private void printQuestion(Question question) {
-        ioService.printFormattedLine(question.text());
+    private void printQuestionAndAnswerOptions(Question question) {
+        ioService.printFormattedLine("Question: %s", question.text());
+        ioService.printLine("Answer options:");
         AtomicInteger questionNumber = new AtomicInteger(1);
         question.answers().forEach(answer -> {
-            ioService.printFormattedLine(questionNumber.toString() + ". " + answer.text());
+            ioService.printFormattedLine(questionNumber + ". " + answer.text());
             questionNumber.getAndIncrement();
         });
+        ioService.printLine("");
     }
 
-    private boolean checkAnswer(List<Answer> answers, String userAnswer) {
-        var answerResult = answers.stream().filter(answer -> answer.text().equals(userAnswer)).findFirst();
-        if (answerResult.isPresent()) {
-            return answerResult.get().isCorrect();
+    private boolean checkStudentAnswer(List<Answer> answers) {
+        int userAnswer = readStudentAnswer();
+        var answerNumber = new AtomicInteger(1);
+        for (Answer answer : answers) {
+            if (answerNumber.get() == userAnswer) {
+                ioService.printLine("Your answer is accepted");
+                ioService.printLine("");
+                return answer.isCorrect();
+            }
+            answerNumber.getAndIncrement();
         }
-        throw new UserAnswerReadException("An inappropriate response was entered");
+        return false;
+    }
+
+    private int readStudentAnswer() {
+        return ioService.readIntForRangeWithPrompt(1, 3,
+                "Please, enter your answer:",
+                "Your answer does not match the answer options. Please, try again:");
     }
 }
