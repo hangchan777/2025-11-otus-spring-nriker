@@ -41,7 +41,8 @@ public class TestServiceImpl implements TestService {
         var testResult = new TestResult(student);
         for (var question: questions) {
             printQuestionAndAnswerOptions(question);
-            var isAnswerValid = checkStudentAnswer(question.answers());
+            var studentAnswer = getStudentAnswer();
+            var isAnswerValid = checkStudentAnswer(question.answers(), studentAnswer);
             testResult.applyAnswer(question, isAnswerValid);
         }
         return testResult;
@@ -58,11 +59,10 @@ public class TestServiceImpl implements TestService {
         ioService.printLine("");
     }
 
-    private boolean checkStudentAnswer(List<Answer> answers) {
-        int userAnswer = readStudentAnswer();
+    private boolean checkStudentAnswer(List<Answer> answers, int studentAnswer) {
         var answerNumber = new AtomicInteger(1);
         for (Answer answer : answers) {
-            if (answerNumber.get() == userAnswer) {
+            if (answerNumber.get() == studentAnswer) {
                 ioService.printLine("Your answer is accepted");
                 ioService.printLine("");
                 return answer.isCorrect();
@@ -72,7 +72,7 @@ public class TestServiceImpl implements TestService {
         return false;
     }
 
-    private int readStudentAnswer() {
+    private int getStudentAnswer() {
         return ioService.readIntForRangeWithPrompt(1, 3,
                 "Please, enter your answer:",
                 "Your answer does not match the answer options. Please, try again:");
