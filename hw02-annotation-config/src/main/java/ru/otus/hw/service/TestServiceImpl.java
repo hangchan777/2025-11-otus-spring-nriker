@@ -34,7 +34,7 @@ public class TestServiceImpl implements TestService {
         ioService.printFormattedLine("The test contains %s questions", questionsCount);
         ioService.printFormattedLine("For successful completion, you need to answer %s of them correctly",
                 testConfig.getRightAnswersCountToPass());
-        ioService.printFormattedLine("Please, answer the questions below%n");
+        ioService.printFormattedLine("Please answer the questions below:%n");
     }
 
     private TestResult studentTesting(List<Question> questions, Student student) {
@@ -53,7 +53,7 @@ public class TestServiceImpl implements TestService {
         ioService.printLine("Answer options:");
         AtomicInteger questionNumber = new AtomicInteger(1);
         question.answers().forEach(answer -> {
-            ioService.printFormattedLine(questionNumber + ". " + answer.text());
+            ioService.printFormattedLine("%s. %s", questionNumber, answer.text());
             questionNumber.getAndIncrement();
         });
         ioService.printLine("");
