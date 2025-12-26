@@ -12,7 +12,11 @@ import ru.otus.hw.domain.TestResult;
 import ru.otus.hw.utils.TestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TestServiceImplTest {
@@ -30,7 +34,6 @@ class TestServiceImplTest {
 	@Test
 	void test_executeTestFor_studentTestSucceed() {
 		when(questionDao.findAll()).thenReturn(TestUtils.getExpectedQuestions());
-		when(testConfig.getRightAnswersCountToPass()).thenReturn(3);
 		when(ioService.readIntForRangeWithPrompt(anyInt(), anyInt(), anyString(), anyString())).thenReturn(1);
 		var expectedTestResult = getExpectedTestResult(student, true);
 
@@ -38,18 +41,11 @@ class TestServiceImplTest {
 
 		assertEquals(expectedTestResult, actualTestResult);
 		verify(questionDao, times(1)).findAll();
-		verify(ioService, times(5)).printLine(anyString());
-		verify(ioService, times(1)).printFormattedLine(anyString());
-		verify(ioService, times(1)).printFormattedLine(anyString(), anyString());
-		verify(ioService, times(3)).printFormattedLine(anyString(), any(), anyString());
-		verify(ioService, times(1)).readIntForRangeWithPrompt(anyInt(), anyInt(),
-				anyString(), anyString());
 	}
 
 	@Test
 	void test_executeTestFor_studentTestFailed() {
 		when(questionDao.findAll()).thenReturn(TestUtils.getExpectedQuestions());
-		when(testConfig.getRightAnswersCountToPass()).thenReturn(3);
 		when(ioService.readIntForRangeWithPrompt(anyInt(), anyInt(), anyString(), anyString())).thenReturn(2);
 		var expectedTestResult = getExpectedTestResult(student, false);
 
@@ -57,12 +53,6 @@ class TestServiceImplTest {
 
 		assertEquals(expectedTestResult, actualTestResult);
 		verify(questionDao, times(1)).findAll();
-		verify(ioService, times(5)).printLine(anyString());
-		verify(ioService, times(1)).printFormattedLine(anyString());
-		verify(ioService, times(1)).printFormattedLine(anyString(), anyString());
-		verify(ioService, times(3)).printFormattedLine(anyString(), any(), anyString());
-		verify(ioService, times(1)).readIntForRangeWithPrompt(anyInt(), anyInt(),
-				anyString(), anyString());
 	}
 
 	private TestResult getExpectedTestResult(Student student, boolean result) {

@@ -10,7 +10,6 @@ import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class TestServiceImpl implements TestService {
         var testResult = new TestResult(student);
         for (var question: questions) {
             printQuestionAndAnswerOptions(question);
-            var studentAnswer = getStudentAnswer();
+            var studentAnswer = getStudentAnswer(question.answers().size());
             var isAnswerValid = checkStudentAnswer(question.answers(), studentAnswer);
             testResult.applyAnswer(question, isAnswerValid);
         }
@@ -51,29 +50,29 @@ public class TestServiceImpl implements TestService {
     private void printQuestionAndAnswerOptions(Question question) {
         ioService.printFormattedLine("Question: %s", question.text());
         ioService.printLine("Answer options:");
-        AtomicInteger questionNumber = new AtomicInteger(1);
-        question.answers().forEach(answer -> {
+        var questionNumber = 1;
+        for (Answer answer : question.answers()) {
             ioService.printFormattedLine("%s. %s", questionNumber, answer.text());
-            questionNumber.getAndIncrement();
-        });
+            questionNumber++;
+        }
         ioService.printLine("");
     }
 
     private boolean checkStudentAnswer(List<Answer> answers, int studentAnswer) {
-        var answerNumber = new AtomicInteger(1);
+        var answerNumber = 1;
         for (Answer answer : answers) {
-            if (answerNumber.get() == studentAnswer) {
+            if (answerNumber == studentAnswer) {
                 ioService.printLine("Your answer is accepted");
                 ioService.printLine("");
                 return answer.isCorrect();
             }
-            answerNumber.getAndIncrement();
+            answerNumber++;
         }
         return false;
     }
 
-    private int getStudentAnswer() {
-        return ioService.readIntForRangeWithPrompt(1, 3,
+    private int getStudentAnswer(int answersCount) {
+        return ioService.readIntForRangeWithPrompt(1, answersCount,
                 "Please, enter your answer:",
                 "Your answer does not match the answer options. Please, try again:");
     }
