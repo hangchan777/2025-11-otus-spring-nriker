@@ -1,31 +1,17 @@
 package ru.otus.hw.dao;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import ru.otus.hw.config.TestFileNameProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.otus.hw.utils.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(properties = "spring.config.location=classpath:application-test.yml")
 class CsvQuestionDaoTest {
 
-	@Mock
-	TestFileNameProvider fileNameProvider;
-	@InjectMocks
-	CsvQuestionDao csvQuestionDao;
-
-	@BeforeEach
-	void setUp() {
-		when(fileNameProvider.getTestFileName()).thenReturn("/questionsTest.csv");
-	}
+	@Autowired
+	private QuestionDao csvQuestionDao;
 
 	@Test
 	void findAll() {
@@ -33,7 +19,6 @@ class CsvQuestionDaoTest {
 
 		var actualQuestions =  csvQuestionDao.findAll();
 
-		verify(fileNameProvider, times(1)).getTestFileName();
 		assertThat(actualQuestions)
 				.hasSize(1)
 				.usingRecursiveComparison()
