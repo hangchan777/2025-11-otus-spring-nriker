@@ -7,7 +7,7 @@ import ru.otus.hw.utils.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = "spring.config.location=classpath:application-test.yml")
+@SpringBootTest
 class CsvQuestionDaoTest {
 
 	@Autowired
